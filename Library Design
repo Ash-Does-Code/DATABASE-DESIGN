@@ -1,0 +1,49 @@
+ -- This is the database design for Library management system
+--core entities : book,author,member
+--relationship : book,author N:N , member,book 1:1
+--relationship tables :book_author,borrow
+--helper table:bookcopy for each copy of the book , instead of saving as hardcoded value in book core table
+CREATE TABLE book(
+	id SERIAL PRIMARY KEY,
+  	name VARCHAR(30) UNIQUE NOT NULL,
+  	ISBN VARCHAR(13) UNIQUE,
+  	pubyear INT
+)
+
+CREATE TABLE author(
+	id SERIAL PRIMARY KEY,
+  	name VARCHAR(20)
+)
+
+CREATE TABLE member(
+  	id SERIAL PRIMARY KEY,
+  	name VARCHAR(20)
+)
+CREATE TYPE borrow_status AS ENUM ('available','borrowed');
+CREATE TABLE bookcopy(
+	copyid SERIAL PRIMARY KEY,
+    bookid INT,
+	status borrow_status NOT NULL default 'available',
+  	FOREIGN KEY (bookid) REFERENCES book(id)
+)
+
+CREATE TABLE book_author(
+	  bookID int,
+  	authorID int,
+  	FOREIGN KEY(bookID) REFERENCES book(id),
+  	FOREIGN KEY(authorID) REFERENCES author(id),
+  	PRIMARY KEY(bookID,authorID)
+)
+CREATE TABLE borrow(
+	BorrowID SERIAL PRIMARY KEY,
+    MemberID INT NOT NULL,
+    CopyID INT NOT NULL,
+    BorrowDate DATE NOT NULL, 
+    ReturnDate DATE,
+  	FOREIGN KEY(copyID) REFERENCES bookcopy(copyid),
+  	FOREIGN KEY(MemberID) REFERENCES member(id),
+  	    CHECK (
+        ReturnDate IS NULL
+        OR ReturnDate >= BorrowDate
+    )
+)
