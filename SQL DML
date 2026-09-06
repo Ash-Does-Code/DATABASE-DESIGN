@@ -1,0 +1,96 @@
+-- INIT database
+CREATE TABLE Product (
+  ProductID SERIAL PRIMARY KEY,
+  Name VARCHAR(100),
+  Description VARCHAR(255)
+);
+
+INSERT INTO Product(Name, Description) VALUES ('Entity Framework Extensions', 'Use <a href="https://entityframework-extensions.net/" target="_blank">Entity Framework Extensions</a> to extend your DbContext with high-performance bulk operations.');
+INSERT INTO Product(Name, Description) VALUES ('Dapper Plus', 'Use <a href="https://dapper-plus.net/" target="_blank">Dapper Plus</a> to extend your IDbConnection with high-performance bulk operations.');
+INSERT INTO Product(Name, Description) VALUES ('C# Eval Expression', 'Use <a href="https://eval-expression.net/" target="_blank">C# Eval Expression</a> to compile and execute C# code at runtime.');
+
+
+
+-- ALTER COMMANDS
+-- GENERAL SYNTAX
+
+ALTER TABLE [IF EXISTS] table_name
+action [, action ...];
+
+action can be:
+
+ADD COLUMN
+DROP COLUMN
+RENAME COLUMN
+ALTER COLUMN
+ADD CONSTRAINT
+DROP CONSTRAINT
+RENAME TO
+SET SCHEMA
+OWNER TO
+
+
+ALTER TABLE product ADD COLUMN price INT DEFAULT 1;
+ALTER TABLE product DROP COLUMN price;
+
+ALTER TABLE employees
+DROP COLUMN IF EXISTS email;
+
+
+ALTER TABLE PRODUCT
+RENAME TO PROD;
+SELECT * FROM PROD;
+
+-- alter data type
+ALTER COLUMN salary TYPE NUMERIC(10,2);
+
+--add default value to an existing col
+ALTER TABLE PRODUCT
+ALTER COLUMN price SET DEFAULT 300;
+--drop default
+ALTER COLUMN price DROP DEFAULT;
+
+ALTER TABLE PRODUCT
+ALTER COLUMN price SET NOT NULL;
+--drop not null
+ALTER COLUMN price DROP NOT NULL;
+
+--keys
+ALTER TABLE product
+--add pk
+ADD CONSTRAINT pk PRIMARY KEY (name)
+--drop pk
+DROP CONSTRAINT pk
+
+--add fk
+ADD CONSTRAINT fk 
+FOREIGN KEY(colA) REFERENCES table(colB);
+--drop fk
+DROP CONSTRAINT fk;
+
+--unique
+ADD CONSTRAINT uq_email
+UNIQUE (email);
+DROP CONSTRAINT uq_email;
+
+--check
+ADD CONSTRAINT chk_salary
+CHECK (salary > 0);
+DROP CONSTRAINT chk_salary;
+
+
+SELECT * FROM Product;
+
+
+
+--delete
+DELETE FROM employees
+WHERE department = 'HR';
+--delete all rows:
+DELETE FROM employees;
+
+--truncate
+TRUNCATE TABLE employees;
+
+--drop
+DROP TABLE IF EXISTS employees;
