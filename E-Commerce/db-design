@@ -1,0 +1,85 @@
+--tables : user , product, cart,cart_items,order, order_items , categories
+CREATE TYPE user_role AS ENUM('USER','ADMIN')
+CREATE TABLE users(
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(20) UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    name VARCHAR(20),
+    role user_role NOT NULL DEFAULT 'USER',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+)
+
+CREATE INDEX user_email ON users(email);
+
+CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    price NUMERIC(10,2) NOT NULL,
+    stock INT NOT NULL DEFAULT 0 CHECK(stock >= 0),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    category_id INT REFERENCES categories(id)
+);
+
+
+CREATE TABLE carts(
+  id SERIAL PRIMARY KEY,
+  user_id INT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  CONSTRAINT fk_userid
+    FOREIGN KEY(user_id)
+    REFERENCES users(id)
+)
+
+
+CREATE TABLE cart_items(
+    id SERIAL PRIMARY KEY,
+    cart_id INT,
+    product_id INT,
+    quantity INT NOT NULL CHECK (quantity > 0),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT fk_cart 
+      FOREIGN KEY(cart_id)
+      REFERENCES carts(id),
+    CONSTRAINT fk_product 
+      FOREIGN KEY(product_id)
+      REFERENCES products(id),
+      CONSTRAINT uniq_cart_prod
+      UNIQUE(cart_id, product_id)
+)
+
+CREATE TYPE order_status AS ENUM ('pending', 'shipped', 'delivered', 'cancelled');
+CREATE TABLE orders(
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id),
+    status order_status NOT NULL DEFAULT 'pending',
+    total_amount INT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+)
+CREATE TABLE order_items(
+    id SERIAL PRIMARY KEY,
+    product_id INT,
+    order_id INT,
+    quantity INT NOT NULL CHECK(quantity > 0),
+    price_at_purchase INT,
+    subtotal INT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT fk_order 
+    FOREIGN KEY(order_id)
+    REFERENENCES orders(id),
+    CONSTRAINT fk_product 
+    FOREIGN KEY(product_id)
+    REFERNENCES products(id),
+    CONSTRAINT uniq_order_prod
+    UNIQUE(order_id, product_id)
+
+)
+
+
