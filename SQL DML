@@ -94,3 +94,54 @@ TRUNCATE TABLE employees;
 
 --drop
 DROP TABLE IF EXISTS employees;
+
+
+
+
+dtypes:
+
+INT
+BIGINT
+DECIMAL
+VARCHAR
+TEXT
+DATE
+TIME
+TIMESTAMP
+BOOLEAN
+
+
+constraints:
+PRIMARY KEY
+FOREIGN KEY
+NOT NULL
+UNIQUE
+DEFAULT
+CHECK
+
+table lvl + col lvl constraints in create statements:
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE,
+    age INT CHECK (age >= 18),
+    salary DECIMAL(10,2) CHECK (salary > 0),
+    is_active BOOLEAN DEFAULT TRUE,
+    joining_date DATE NOT NULL,
+    department_id INT,
+
+    FOREIGN KEY (department_id)
+        REFERENCES departments(id)
+);
+
+naming constraints:
+CREATE TABLE users (
+    id INT,
+    email VARCHAR(255),
+
+    CONSTRAINT pk_users
+        PRIMARY KEY (id),
+
+    CONSTRAINT uq_users_email
+        UNIQUE (email)
+);
